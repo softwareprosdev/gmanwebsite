@@ -78,7 +78,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <span className="text-lg font-bold text-white">NX</span>
             </div>
             <div className="flex flex-col leading-tight">
-              <span className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-gold-400">
+              <span className="text-base text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-gold-400" style={{ fontFamily: "var(--font-nosifer)" }}>
                 Numix Pro
               </span>
               <span className="text-[10px] text-gray-500">Handyman CRM</span>
@@ -218,7 +218,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           >
             <FaBars size={24} />
           </button>
-          <Link href="/admin" className="font-bold text-teal-500">
+          <Link href="/admin" className="text-teal-500" style={{ fontFamily: "var(--font-nosifer)" }}>
             Numix Pro
           </Link>
           <div className="w-6"></div>

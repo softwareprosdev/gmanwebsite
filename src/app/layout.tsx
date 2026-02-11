@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Nosifer } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const nosifer = Nosifer({
+  variable: "--font-nosifer",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -140,7 +146,7 @@ export default function RootLayout({
         <meta name="geo.position" content="26.2191;-98.2505" />
         <meta name="ICBM" content="26.2191,-98.2505" />
       </head>
-      <body className={`${inter.variable} font-sans`}>
+      <body className={`${inter.variable} ${nosifer.variable} font-sans`}>
         {children}
       </body>
     </html>
