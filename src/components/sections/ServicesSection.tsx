@@ -4,61 +4,46 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { services, Service } from "@/data/services";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
-import { NeonButton } from "@/components/ui/NeonButton";
+import Link from "next/link";
 
-interface ServicesSectionProps {
-  className?: string;
-}
-
-export function ServicesSection({ className = "" }: ServicesSectionProps) {
+export function ServicesSection({ className = "" }: { className?: string }) {
   const [activeService, setActiveService] = useState<Service | null>(services[0]);
 
-  const handleServiceClick = (service: Service) => {
-    setActiveService(service);
-  };
-
   return (
-    <section className={`py-24 bg-slate-950 relative overflow-hidden ${className}`}>
-      {/* Background elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-600/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-600/5 rounded-full blur-3xl"></div>
-      </div>
-
+    <section className={`py-24 bg-white relative overflow-hidden ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <ScrollReveal className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">Services</span>
+          <span className="inline-block px-4 py-1.5 bg-amber-50 text-[#d4a017] text-sm font-semibold rounded-full mb-4 border border-amber-200">Our Services</span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+            What We <span className="text-[#1e3a5f]">Offer</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Professional solutions for every repair need. Our experts use advanced tools and techniques to deliver superior results.
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Professional solutions for every repair need. Our experts deliver superior results with years of experience.
           </p>
         </ScrollReveal>
 
-        {/* Services Bento Grid */}
+        {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {/* Large Featured Service Card */}
           <div className="md:col-span-2 lg:col-span-2 relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div className="relative h-full bg-slate-900 rounded-2xl p-8 border border-cyan-500/30">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className="h-full bg-[#1e3a5f] rounded-2xl p-8 text-white shadow-xl">
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-4xl shadow-lg shadow-cyan-500/30">
+                  <div className="w-16 h-16 rounded-xl bg-[#d4a017] flex items-center justify-center text-4xl shadow-lg">
                     {activeService?.icon}
                   </div>
                   <div className="text-right">
-                    <span className="text-cyan-400 font-bold text-4xl block">{activeService?.id === "plumbing" ? "50+" : activeService?.id === "electrical" ? "30+" : "15+"}</span>
-                    <span className="text-sm text-gray-500 uppercase tracking-wider">Projects</span>
+                    <span className="text-[#d4a017] font-bold text-4xl block">{activeService?.id === "plumbing" ? "50+" : activeService?.id === "electrical" ? "30+" : "15+"}</span>
+                    <span className="text-sm text-blue-200 uppercase tracking-wider">Projects</span>
                   </div>
                 </div>
-                <h3 className="text-3xl font-bold text-white mb-3">{activeService?.title}</h3>
-                <p className="text-gray-400 mb-6">{activeService?.description}</p>
+                <h3 className="text-3xl font-bold mb-3">{activeService?.title}</h3>
+                <p className="text-blue-200 mb-6">{activeService?.description}</p>
                 <div className="space-y-2">
                   {activeService?.features.slice(0, 3).map((feature, index) => (
-                    <div key={index} className="flex items-center text-sm text-gray-300">
-                      <svg className="w-4 h-4 text-cyan-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div key={index} className="flex items-center text-sm text-blue-100">
+                      <svg className="w-4 h-4 text-[#d4a017] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       {feature}
@@ -79,12 +64,12 @@ export function ServicesSection({ className = "" }: ServicesSectionProps) {
               viewport={{ once: true }}
             >
               <button
-                onClick={() => handleServiceClick(service)}
+                onClick={() => setActiveService(service)}
                 className={`
                   w-full text-left p-6 rounded-xl border transition-all duration-300 h-full
                   ${activeService?.id === service.id
-                    ? "bg-slate-800/80 border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.2)]"
-                    : "bg-slate-900 border-slate-800 hover:border-cyan-500/30 hover:bg-slate-800/50"
+                    ? "bg-blue-50 border-[#1e3a5f] shadow-md"
+                    : "bg-white border-gray-200 hover:border-[#d4a017] hover:shadow-md"
                   }
                 `}
               >
@@ -93,26 +78,26 @@ export function ServicesSection({ className = "" }: ServicesSectionProps) {
                     <div className={`
                       w-12 h-12 rounded-lg flex items-center justify-center text-xl
                       ${activeService?.id === service.id
-                        ? "bg-gradient-to-br from-cyan-500/20 to-purple-500/20 text-cyan-400 border border-cyan-500/50"
-                        : "bg-slate-800 text-gray-400 border border-slate-700"
+                        ? "bg-[#1e3a5f] text-white"
+                        : "bg-gray-100 text-gray-600"
                       }
                     `}>
                       {service.icon}
                     </div>
                     <div>
-                      <h3 className={`font-bold ${activeService?.id === service.id ? "text-white" : "text-gray-300"}`}>
+                      <h3 className={`font-bold ${activeService?.id === service.id ? "text-[#1e3a5f]" : "text-gray-800"}`}>
                         {service.title}
                       </h3>
                       <div className="flex space-x-1 mt-2">
-                        <div className={`w-1.5 h-1.5 rounded-full ${activeService?.id === service.id ? "bg-cyan-500" : "bg-slate-700"}`}></div>
-                        <div className={`w-1.5 h-1.5 rounded-full ${activeService?.id === service.id ? "bg-purple-500" : "bg-slate-700"}`}></div>
-                        <div className={`w-1.5 h-1.5 rounded-full ${activeService?.id === service.id ? "bg-pink-500" : "bg-slate-700"}`}></div>
+                        <div className={`w-1.5 h-1.5 rounded-full ${activeService?.id === service.id ? "bg-[#1e3a5f]" : "bg-gray-300"}`}></div>
+                        <div className={`w-1.5 h-1.5 rounded-full ${activeService?.id === service.id ? "bg-[#d4a017]" : "bg-gray-300"}`}></div>
+                        <div className={`w-1.5 h-1.5 rounded-full ${activeService?.id === service.id ? "bg-[#c1272d]" : "bg-gray-300"}`}></div>
                       </div>
                     </div>
                   </div>
                   <svg
                     className={`w-5 h-5 transition-transform duration-300 ${
-                      activeService?.id === service.id ? "text-cyan-400 rotate-90" : "text-gray-600"
+                      activeService?.id === service.id ? "text-[#1e3a5f] rotate-90" : "text-gray-400"
                     }`}
                     fill="none"
                     stroke="currentColor"
@@ -129,16 +114,16 @@ export function ServicesSection({ className = "" }: ServicesSectionProps) {
         {/* Stats Row */}
         <ScrollReveal delay={0.6} className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Expert Technicians", value: "15+", color: "from-cyan-500 to-blue-500" },
-            { label: "Satisfaction", value: "98%", color: "from-purple-500 to-pink-500" },
-            { label: "Response Time", value: "2h", color: "from-yellow-500 to-orange-500" },
-            { label: "Warranty", value: "5yr", color: "from-green-500 to-emerald-500" },
+            { label: "Expert Technicians", value: "15+", color: "bg-blue-50 text-[#1e3a5f]" },
+            { label: "Satisfaction", value: "98%", color: "bg-amber-50 text-[#d4a017]" },
+            { label: "Response Time", value: "2h", color: "bg-green-50 text-green-700" },
+            { label: "Warranty", value: "5yr", color: "bg-red-50 text-[#c1272d]" },
           ].map((stat, index) => (
-            <div key={index} className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center hover:border-cyan-500/30 transition-colors">
-              <div className={`text-4xl font-bold bg-gradient-to-br ${stat.color} bg-clip-text text-transparent mb-2`}>
+            <div key={index} className={`${stat.color} rounded-xl p-6 text-center border border-gray-100`}>
+              <div className="text-4xl font-bold mb-2">
                 {stat.value}
               </div>
-              <div className="text-sm text-gray-400">{stat.label}</div>
+              <div className="text-sm text-gray-500">{stat.label}</div>
             </div>
           ))}
         </ScrollReveal>

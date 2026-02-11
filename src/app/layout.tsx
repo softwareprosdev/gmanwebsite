@@ -10,8 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  // Core Metadata
-  title: "RGV Handyman | Professional Handyman Services in South Texas",
+  title: "RGV Handyman Services | Professional Handyman Services in South Texas",
   description: "Professional handyman services in Hidalgo, Cameron, and Starr counties. Plumbing, electrical, repair, painting, HVAC, and smart home installation. Fast response, same-day service available.",
   keywords: [
     "handyman service", "RGV handyman", "South Texas handyman", "Hidalgo County handyman",
@@ -22,29 +21,29 @@ export const metadata: Metadata = {
     "Same-day handyman", "Emergency repair", "Home maintenance",
     "Professional contractor", "Reliable handyman", "Affordable repairs"
   ],
-  authors: [{ name: "RGV Handyman Team" }],
+  authors: [{ name: "RGV Handyman Services" }],
   metadataBase: new URL("https://rgvhandyman.softwarepros.org"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "RGV Handyman",
-    title: "RGV Handyman | Professional Handyman Services",
+    siteName: "RGV Handyman Services",
+    title: "RGV Handyman Services | Professional Handyman Services",
     description: "Professional handyman services in Hidalgo, Cameron, and Starr counties. Fast response, same-day service available.",
     url: "https://rgvhandyman.softwarepros.org",
     images: [
       {
-        url: "/og-image.png",
+        url: "/images/logorgv.png",
         width: 1200,
         height: 630,
-        alt: "RGV Handyman - Professional Handyman Services",
+        alt: "RGV Handyman Services - Professional Handyman Services",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "RGV Handyman | Professional Handyman Services",
+    title: "RGV Handyman Services | Professional Handyman Services",
     description: "Professional handyman services in South Texas. Fast response, same-day service available.",
-    images: ["/og-image.png"],
+    images: ["/images/logorgv.png"],
     creator: "@rgvhandyman",
   },
   robots: {
@@ -78,8 +77,8 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Handyman",
-              "name": "RGV Handyman",
-              "image": "https://rgvhandyman.softwarepros.org/og-image.png",
+              "name": "RGV Handyman Services",
+              "image": "https://rgvhandyman.softwarepros.org/images/logorgv.png",
               "description": "Professional handyman services in Hidalgo, Cameron, and Starr counties.",
               "address": {
                 "@type": "PostalAddress",
@@ -89,7 +88,7 @@ export default function RootLayout({
                 "postalCode": "78501",
                 "addressCountry": "US",
               },
-              "telephone": "+1-555-123-4567",
+              "telephone": "+1-956-200-2815",
               "email": "hello@rgvhandyman.softwarepros.org",
               "url": "https://rgvhandyman.softwarepros.org",
               "openingHoursSpecification": {
@@ -144,7 +143,7 @@ export default function RootLayout({
         <meta name="ICBM" content="26.2191,-98.2505" />
       </head>
       <body className={`${inter.variable} font-sans`}>
-        <div className="min-h-screen bg-black text-white selection:bg-teal-600/30 selection:text-teal-200">
+        <div className="min-h-screen bg-white text-gray-900 selection:bg-amber-500/30 selection:text-amber-900">
           <Navbar />
           <main>{children}</main>
           <Footer />

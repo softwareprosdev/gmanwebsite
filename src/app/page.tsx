@@ -12,9 +12,9 @@ export default function Home() {
       <BookingSection />
 
       {/* Decorative bottom element */}
-      <div className="relative h-32 overflow-hidden bg-black border-t border-cyan-900/30">
+      <div className="relative h-32 overflow-hidden bg-black border-t border-blue-900/30">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(30,58,95,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(30,58,95,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       </div>
     </div>
   );

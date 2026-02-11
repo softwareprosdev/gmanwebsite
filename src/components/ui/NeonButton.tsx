@@ -16,13 +16,13 @@ export function NeonButton({
   className = "",
   ...props
 }: ButtonProps) {
-  const baseStyles = "relative inline-flex items-center justify-center font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black";
+  const baseStyles = "relative inline-flex items-center justify-center font-bold transition-all duration-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2";
 
   const variants = {
-    primary: "bg-gradient-to-r from-cyan-600 to-purple-600 text-white hover:shadow-[0_0_30px_rgba(6,182,212,0.4)] hover:scale-105 border border-cyan-500/30",
-    secondary: "bg-slate-800 text-white hover:bg-slate-700 border border-cyan-500/20 hover:border-cyan-400",
-    outline: "bg-transparent text-cyan-400 border border-cyan-500 hover:bg-cyan-500/10 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)]",
-    ghost: "bg-transparent text-gray-300 hover:text-cyan-400 hover:bg-white/5",
+    primary: "bg-[#1e3a5f] text-white hover:bg-[#2a5080] hover:shadow-lg hover:shadow-blue-900/20 hover:scale-105",
+    secondary: "bg-[#d4a017] text-white hover:bg-[#b8860b] hover:shadow-lg hover:shadow-amber-500/20",
+    outline: "bg-transparent text-[#1e3a5f] border-2 border-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white",
+    ghost: "bg-transparent text-gray-600 hover:text-[#1e3a5f] hover:bg-gray-100",
   };
 
   const sizes = {
@@ -45,16 +45,6 @@ export function NeonButton({
     >
       {icon && <span className="mr-2">{icon}</span>}
       {children}
-
-      {/* Decorative corner accents */}
-      {variant === "primary" && (
-        <>
-          <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan-400 rounded-tl-lg" />
-          <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-purple-400 rounded-tr-lg" />
-          <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-cyan-400 rounded-bl-lg" />
-          <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-purple-400 rounded-br-lg" />
-        </>
-      )}
     </button>
   );
 }
