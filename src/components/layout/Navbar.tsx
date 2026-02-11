@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import { FaSignInAlt } from "react-icons/fa";
 
 interface NavbarProps {
   className?: string;
@@ -45,25 +45,22 @@ export function Navbar({ className = "" }: NavbarProps) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo - Text Only */}
           <Link href="/" className="group relative flex items-center space-x-3">
-            <Image
-              src="/images/logorgv.png"
-              alt="RGV Handyman Services"
-              width={50}
-              height={50}
-              className="rounded-lg"
-            />
             <div className="hidden sm:block">
-              <span className="text-xl font-bold text-[#1e3a5f]">
+              <span className="text-2xl md:text-3xl font-black text-[#1e3a5f] leading-tight">
                 RGV <span className="text-[#d4a017]">Handyman</span>
               </span>
-              <span className="block text-xs text-gray-500 -mt-1">Services</span>
+            </div>
+            <div className="sm:hidden">
+              <span className="text-xl font-black text-[#1e3a5f]">
+                RGV <span className="text-[#d4a017]">H</span>
+              </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-6">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -85,9 +82,16 @@ export function Navbar({ className = "" }: NavbarProps) {
             ))}
             <Link
               href="/contact"
-              className="ml-4 px-6 py-2.5 rounded-lg bg-[#1e3a5f] text-white text-sm font-bold hover:bg-[#2a5080] transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/20"
+              className="px-6 py-2.5 rounded-lg bg-[#1e3a5f] text-white text-sm font-bold hover:bg-[#2a5080] transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/20"
             >
               Book Now
+            </Link>
+            <Link
+              href="/admin/login"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg border border-[#1e3a5f]/30 text-[#1e3a5f] text-sm font-medium hover:bg-[#1e3a5f] hover:text-white transition-all duration-300"
+            >
+              <FaSignInAlt size={16} />
+              <span>Client Login</span>
             </Link>
           </div>
 
@@ -139,6 +143,13 @@ export function Navbar({ className = "" }: NavbarProps) {
                 className="block mt-4 w-full px-4 py-3 rounded-lg bg-[#1e3a5f] text-center text-white font-bold hover:bg-[#2a5080] transition-all"
               >
                 Book Your Service
+              </Link>
+              <Link
+                href="/admin/login"
+                onClick={() => setIsMenuOpen(false)}
+                className="block mt-4 w-full px-4 py-3 rounded-lg border border-[#1e3a5f]/30 text-[#1e3a5f] text-center font-medium hover:bg-[#1e3a5f] hover:text-white transition-all"
+              >
+                Client Login
               </Link>
             </div>
           </motion.div>

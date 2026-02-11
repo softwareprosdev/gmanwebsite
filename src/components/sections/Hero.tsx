@@ -110,10 +110,12 @@ export function Hero() {
                 </div>
 
                 <div className="rounded-xl overflow-hidden shadow-lg h-40 relative group">
-                  <img
-                    src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&q=80"
+                  <Image
+                    src="https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?w=400&q=80"
                     alt="Electrical work"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-[#1e3a5f]/30 group-hover:bg-[#1e3a5f]/10 transition-colors"></div>
                   <span className="absolute bottom-2 left-3 text-white text-sm font-semibold">Electrical</span>

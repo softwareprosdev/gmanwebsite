@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { FaHome } from "react-icons/fa";
-import Image from "next/image";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -58,15 +57,11 @@ export default function AdminLoginPage() {
         {/* Logo and Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
-            <Image
-              src="/images/logorgv.png"
-              alt="RGV Handyman Services"
-              width={72}
-              height={72}
-              className="rounded-2xl shadow-lg"
-            />
+            <div className="h-18 w-18 rounded-2xl bg-gradient-to-br from-teal-600 to-gold-500 flex items-center justify-center">
+              <span className="text-4xl font-black text-white">RGV</span>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Login</h1>
+          <h1 className="text-3xl font-black text-[#1e3a5f] mb-2">Client Login</h1>
           <p className="text-gray-500">RGV Handyman Management System</p>
         </div>
 
