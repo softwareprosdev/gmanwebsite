@@ -1,0 +1,11 @@
+[variables]
+  NIXPACKS_NODEJS_VERSION = "22"
+
+[phases.build]
+  commands = [
+    "npm install --legacy-peer-deps",
+    "npm run build"
+  ]
+
+[phases.install]
+  packages = ["nodejs-22_x", "npm-10_x"]
