@@ -102,7 +102,7 @@ export default function Home() {
       <PortfolioSection />
       <BookingSection />
 
-      {/* Admin Login Section */}
+      {/* Client Login Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
           <Link href="/admin/login">
@@ -112,7 +112,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 <span className="text-white font-bold text-lg tracking-wide group-hover:text-[#d4a017] transition-colors duration-300">
-                  Admin Login
+                  Client Login
                 </span>
               </div>
             </div>
