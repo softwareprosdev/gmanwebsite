@@ -158,12 +158,16 @@ Edit `src/app/layout.tsx` to update:
 
 ## 🌐 Deployment
 
-### Vercel (Recommended)
+### Coolify (Self-Hosted VPS)
 
-```bash
-npm install -g vercel
-vercel
-```
+The project is configured for deployment on **Coolify** using Nixpacks:
+
+1. Connect your GitHub repository to Coolify
+2. Select the `main` branch
+3. The `nixpacks.toml` will automatically configure the build
+4. Add environment variables in Coolify dashboard:
+   - `NODE_VERSION` = `22`
+5. Click Deploy
 
 ### Build Artifacts
 
