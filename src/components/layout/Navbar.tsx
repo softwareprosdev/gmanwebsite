@@ -53,8 +53,8 @@ export function Navbar({ className = "" }: NavbarProps) {
               </span>
             </div>
             <div className="sm:hidden">
-              <span className="text-xl font-black text-[#1e3a5f]">
-                RGV <span className="text-[#d4a017]">H</span>
+              <span className="text-lg font-black text-[#1e3a5f]">
+                RGV <span className="text-[#d4a017]">Handyman</span> <span className="text-base">🔨</span>
               </span>
             </div>
           </Link>

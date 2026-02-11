@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
-import { readClientData, searchClients, getClientById } from "../lib/data";
-import { motion as framerMotion } from "framer-motion";
+import { useClients } from "@/components/ClientProvider";
 
 interface Client {
   id: string;
@@ -14,7 +13,7 @@ interface Client {
   address: string;
   city: string;
   zone: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive" | "pending" | "blocked";
   totalBookings: number;
   lastBooking: string | null;
   notes: string;
@@ -23,36 +22,77 @@ interface Client {
 
 export default function ClientsPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [clients, setClients] = useState<Client[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
-  // Initialize with data
-  useState(() => {
-    const data = readClientData();
-    setClients(data.clients as Client[]);
-  });
+  const { clients, loading, error, refreshClients, createClient, updateClient, deleteClient, searchClients } = useClients();
 
-  // Search clients
-  const filteredClients = useMemo(() => {
-    if (!searchQuery) return clients;
-    return searchClients(searchQuery) as Client[];
-  }, [searchQuery, clients]);
+  const [filteredClients, setFilteredClients] = useState<Client[]>([]);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredClients(clients);
+    }
+  }, [clients, searchQuery]);
+
+  // Search clients when query changes
+  useEffect(() => {
+    if (searchQuery) {
+      searchClients(searchQuery).then(setFilteredClients);
+    }
+  }, [searchQuery]);
 
   const handleEdit = (client: Client) => {
     setSelectedClient(client);
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this client?")) {
-      setClients((prev) => prev.filter((c) => c.id !== id));
+      await deleteClient(id);
     }
   };
 
+  const handleAddClient = async (clientData: Omit<Client, "id" | "createdAt" | "totalBookings" | "lastBooking">) => {
+    const newClient = await createClient(clientData);
+    setIsAddModalOpen(false);
+  };
+
+  const handleUpdateClient = async (clientData: Omit<Client, "id" | "createdAt" | "totalBookings" | "lastBooking">) => {
+    if (selectedClient) {
+      await updateClient(selectedClient.id, clientData);
+      setIsEditModalOpen(false);
+      setSelectedClient(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button
+            onClick={() => refreshClients()}
+            className="px-4 py-2 bg-teal-600 text-white rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-slate-950 space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -101,7 +141,12 @@ export default function ClientsPage() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold text-lg">{client.name}</h3>
-                  <span className="text-xs px-2 py-1 rounded-full bg-teal-500/10 text-teal-400">
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    client.status === 'active' ? 'bg-teal-500/10 text-teal-400' :
+                    client.status === 'inactive' ? 'bg-gray-500/10 text-gray-400' :
+                    client.status === 'pending' ? 'bg-amber-500/10 text-amber-400' :
+                    'bg-red-500/10 text-red-400'
+                  }`}>
                     {client.status}
                   </span>
                 </div>
@@ -153,7 +198,7 @@ export default function ClientsPage() {
         ))}
       </div>
 
-      {filteredClients.length === 0 && (
+      {filteredClients.length === 0 && !loading && (
         <div className="text-center py-12">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-900/50 flex items-center justify-center">
             <FaSearch className="text-gray-500" size={32} />
@@ -168,10 +213,7 @@ export default function ClientsPage() {
         <ClientModal
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
-          onSave={(newClient) => {
-            setClients([...clients, { ...newClient, id: `CL${String(clients.length + 1).padStart(3, "0")}` }]);
-            setIsAddModalOpen(false);
-          }}
+          onSave={handleAddClient}
           mode="add"
         />
       )}
@@ -182,10 +224,7 @@ export default function ClientsPage() {
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           client={selectedClient}
-          onSave={(updatedClient) => {
-            setClients((prev) => prev.map((c) => (c.id === updatedClient.id ? updatedClient : c)));
-            setIsEditModalOpen(false);
-          }}
+          onSave={handleUpdateClient}
           mode="edit"
         />
       )}
@@ -203,7 +242,7 @@ function ClientModal({
   isOpen: boolean;
   onClose: () => void;
   client?: Client;
-  onSave: (client: Client) => void;
+  onSave: (client: Omit<Client, "id" | "createdAt" | "totalBookings" | "lastBooking">) => void;
   mode?: "add" | "edit";
 }) {
   const [formData, setFormData] = useState<Partial<Client>>({
@@ -220,7 +259,7 @@ function ClientModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData as Client);
+    onSave(formData as any);
   };
 
   return (
@@ -310,6 +349,7 @@ function ClientModal({
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
                 <option value="pending">Pending</option>
+                <option value="blocked">Blocked</option>
               </select>
             </div>
             <div className="col-span-2">

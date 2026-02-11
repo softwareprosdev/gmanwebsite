@@ -1,33 +1,29 @@
 import DashboardStats from "./components/DashboardStats";
-import { readClientData, readBookingData, readServicesData } from "./lib/data";
+import { getDashboardStats } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
-export default function DashboardPage() {
-  // Read real data from JSON files
-  const clientsData = readClientData();
-  const bookingsData = readBookingData();
-
-  // Calculate stats
-  const totalClients = clientsData.clients.length;
-  const totalBookings = bookingsData.bookings.length;
-  const pendingBookings = bookingsData.bookings.filter((b: any) => b.status === "new" || b.status === "contacted").length;
-  const completedBookings = bookingsData.bookings.filter((b: any) => b.status === "completed").length;
-  const totalRevenue = bookingsData.bookings.reduce((sum: number, b: any) => sum + (b.price || 0), 0);
+export default async function DashboardPage() {
+  const stats = await getDashboardStats();
+  const recentBookings = await prisma.booking.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 5,
+  });
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-screen bg-slate-950 space-y-8">
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
-        <p className="text-gray-400">Welcome back! Here's what's happening with RGV Handyman today.</p>
+        <p className="text-gray-400">Welcome back! Here&apos;s what&apos;s happening with RGV Handyman today.</p>
       </div>
 
       {/* Stats Cards */}
       <DashboardStats
-        totalClients={totalClients}
-        totalBookings={totalBookings}
-        pendingBookings={pendingBookings}
-        totalRevenue={totalRevenue}
-        completedBookings={completedBookings}
+        totalClients={stats.totalClients}
+        totalBookings={stats.totalBookings}
+        pendingBookings={stats.pendingBookings}
+        totalRevenue={stats.totalRevenue}
+        completedBookings={stats.completedBookings}
       />
 
       {/* Quick Actions Section */}
@@ -42,7 +38,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-4">
-            {bookingsData.bookings.slice(0, 5).map((booking: any, index: number) => (
+            {recentBookings.map((booking, index) => (
               <div key={index} className="flex items-start space-x-4 pb-4 border-b border-white/5 last:border-0">
                 <div className="flex-shrink-0">
                   <div
@@ -127,7 +123,7 @@ export default function DashboardPage() {
             <div className="pt-4 border-t border-white/5">
               <div className="text-center">
                 <p className="text-sm text-gray-400 mb-2">Next Follow-up</p>
-                <p className="text-lg font-bold text-teal-400">{pendingBookings} pending bookings</p>
+                <p className="text-lg font-bold text-teal-400">{stats.pendingBookings} pending bookings</p>
                 <button className="mt-3 w-full py-2 rounded-lg bg-teal-500/10 text-teal-400 text-sm hover:bg-teal-500/20 transition-colors">
                   View Calendar
                 </button>

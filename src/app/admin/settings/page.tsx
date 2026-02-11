@@ -120,7 +120,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-screen bg-slate-950 space-y-8">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

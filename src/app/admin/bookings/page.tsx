@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaSearch, FaFilter, FaCalendar, FaClock, FaMapMarkerAlt, FaDollarSign, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
-import { readBookingData, searchBookings, updateBookingStatus, readClientData } from "../lib/data";
+import { FaSearch, FaFilter, FaCalendar, FaClock, FaMapMarkerAlt, FaDollarSign, FaPlus, FaEdit, FaTrash, FaCheckCircle } from "react-icons/fa";
+import { useBookings } from "@/components/BookingProvider";
 
 interface Booking {
   id: string;
@@ -16,70 +16,83 @@ interface Booking {
   time: string;
   address: string;
   city: string;
-  status: "new" | "contacted" | "scheduled" | "completed" | "cancelled";
+  status: "new" | "contacted" | "scheduled" | "in_progress" | "completed" | "cancelled" | "overdue";
   price: number;
-  paymentStatus: "pending" | "deposit" | "paid" | "refunded";
+  paymentStatus: "pending" | "deposit" | "paid" | "refunded" | "failed";
   description: string;
   createdAt: string;
 }
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   new: "bg-blue-500/20 text-blue-300 border-blue-500/30",
   contacted: "bg-amber-500/20 text-amber-300 border-amber-500/30",
   scheduled: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+  in_progress: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
   completed: "bg-green-500/20 text-green-300 border-green-500/30",
   cancelled: "bg-red-500/20 text-red-300 border-red-500/30",
+  overdue: "bg-rose-500/20 text-rose-300 border-rose-500/30",
 };
 
-const paymentStatusColors = {
+const paymentStatusColors: Record<string, string> = {
   pending: "bg-gray-500/20 text-gray-300",
   deposit: "bg-amber-500/20 text-amber-300",
   paid: "bg-green-500/20 text-green-300",
   refunded: "bg-red-500/20 text-red-300",
+  failed: "bg-rose-500/20 text-rose-300",
 };
 
 export default function BookingsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [clients, setClients] = useState<any[]>([]);
 
-  useState(() => {
-    const bookingData = readBookingData();
-    const clientData = readClientData();
-    setBookings(bookingData.bookings as Booking[]);
-    setClients(clientData.clients);
-  });
+  const { bookings, loading, error, refreshBookings, filterByStatus, searchBookings } = useBookings();
 
-  const filteredBookings = useMemo(() => {
-    let result = bookings;
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
 
-    // Apply status filter
+  useEffect(() => {
+    if (!searchQuery && statusFilter === "all") {
+      setFilteredBookings(bookings);
+    }
+  }, [bookings, searchQuery, statusFilter]);
+
+  useEffect(() => {
     if (statusFilter !== "all") {
-      result = result.filter((b) => b.status === statusFilter);
+      filterByStatus(statusFilter).then(setFilteredBookings);
+    } else if (searchQuery) {
+      searchBookings(searchQuery).then(setFilteredBookings);
     }
+  }, [statusFilter, searchQuery]);
 
-    // Apply search
-    if (searchQuery) {
-      result = searchBookings(searchQuery) as Booking[];
-    }
+  const handleStatusChange = async (bookingId: string, newStatus: string) => {
+    await filterByStatus(newStatus);
+  };
 
-    return result;
-  }, [bookings, statusFilter, searchQuery]);
-
-  const handleStatusChange = (bookingId: string, newStatus: Booking["status"]) => {
-    setBookings((prev) =>
-      prev.map((b) => (b.id === bookingId ? { ...b, status: newStatus } : b))
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      </div>
     );
-  };
+  }
 
-  const getClientName = (clientId: string) => {
-    const client = clients.find((c) => c.id === clientId);
-    return client ? client.name : "Unknown Client";
-  };
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button
+            onClick={() => refreshBookings()}
+            className="px-4 py-2 bg-teal-600 text-white rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-slate-950 space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -126,6 +139,7 @@ export default function BookingsPage() {
               <option value="new">New</option>
               <option value="contacted">Contacted</option>
               <option value="scheduled">Scheduled</option>
+              <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
             </select>
@@ -197,10 +211,10 @@ export default function BookingsPage() {
                       <span>Update Status</span>
                     </button>
                     <div className="absolute right-0 mt-2 w-48 bg-slate-950 border border-white/10 rounded-lg shadow-xl hidden group-hover/status:block z-50">
-                      {["new", "contacted", "scheduled", "completed", "cancelled"].map((status) => (
+                      {["new", "contacted", "scheduled", "in_progress", "completed", "cancelled"].map((status) => (
                         <button
                           key={status}
-                          onClick={() => handleStatusChange(booking.id, status as any)}
+                          onClick={() => handleStatusChange(booking.id, status)}
                           className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-teal-500/10 hover:text-teal-400 capitalize"
                         >
                           {status}
@@ -234,7 +248,7 @@ export default function BookingsPage() {
         ) : (
           <div className="text-center py-12">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-900/50 flex items-center justify-center">
-              <FaSearch className="text-gray-500" size={32} />
+              <FaCheckCircle className="text-gray-500" size={32} />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">No bookings found</h3>
             <p className="text-gray-400">Try adjusting your filters or search criteria</p>

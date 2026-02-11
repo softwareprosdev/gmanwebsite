@@ -1,17 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { FaHome } from "react-icons/fa";
 
-export default function AdminLoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/admin";
+
+  const { data: session, status } = useSession();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (status === "loading") return;
+    if (status === "authenticated") {
+      router.push(callbackUrl);
+    }
+  }, [status, router, callbackUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,20 +32,20 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      // Credential check
-      if (
-        email === "admin@rgvhandyman.com" &&
-        password === "RGVadmin2024"
-      ) {
-        localStorage.setItem(
-          "adminAuth",
-          JSON.stringify({ authenticated: true, email })
-        );
-        router.push("/admin");
+      const result = await signIn("credentials", {
+        email,
+        password,
+        callbackUrl,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(result.error);
       } else {
-        setError("Invalid email or password. Please try again.");
+        router.push(callbackUrl);
+        router.refresh();
       }
-    } catch {
+    } catch (err) {
       setError("Authentication failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -52,22 +65,22 @@ export default function AdminLoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md z-10"
+        className="w-full max-w-md z-10 px-2 sm:px-0"
       >
         {/* Logo and Title */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="inline-flex items-center justify-center mb-4">
-            <div className="h-18 w-18 rounded-2xl bg-gradient-to-br from-teal-600 to-gold-500 flex items-center justify-center">
-              <span className="text-4xl font-black text-white">RGV</span>
+            <div className="h-16 w-16 sm:h-18 sm:w-18 rounded-2xl bg-gradient-to-br from-teal-600 to-gold-500 flex items-center justify-center">
+              <span className="text-3xl sm:text-4xl">🔨</span>
             </div>
           </div>
-          <h1 className="text-3xl font-black text-[#1e3a5f] mb-2">Client Login</h1>
-          <p className="text-gray-500">RGV Handyman Management System</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#1e3a5f] mb-2">RGV Handyman</h1>
+          <p className="text-gray-500 text-sm sm:text-base">Admin Management System</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-xl">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -91,7 +104,7 @@ export default function AdminLoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-[#1e3a5f] text-gray-900 placeholder-gray-400 transition-all duration-200"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-[#1e3a5f] text-gray-900 placeholder-gray-400 transition-all duration-200 text-base"
                 placeholder="admin@rgvhandyman.com"
               />
             </div>
@@ -106,7 +119,7 @@ export default function AdminLoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-[#1e3a5f] text-gray-900 placeholder-gray-400 transition-all duration-200"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#1e3a5f] focus:border-[#1e3a5f] text-gray-900 placeholder-gray-400 transition-all duration-200 text-base"
                 placeholder="••••••••"
               />
             </div>
@@ -121,7 +134,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3.5 px-6 rounded-lg bg-[#1e3a5f] text-white font-bold text-lg hover:bg-[#2a5080] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg"
+              className="w-full py-3.5 px-6 rounded-lg bg-[#1e3a5f] text-white font-bold text-base sm:text-lg hover:bg-[#2a5080] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg min-h-[48px]"
             >
               {isLoading ? (
                 <>
@@ -139,13 +152,27 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Back to Home */}
-        <div className="mt-8 text-center">
-          <Link href="/" className="text-gray-400 hover:text-[#1e3a5f] flex items-center justify-center space-x-2 transition-colors">
+        <div className="mt-6 sm:mt-8 text-center">
+          <Link href="/" className="text-gray-400 hover:text-[#1e3a5f] flex items-center justify-center space-x-2 transition-colors min-h-[44px]">
             <FaHome size={16} />
             <span>Back to RGV Handyman</span>
           </Link>
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-white items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1e3a5f]"></div>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

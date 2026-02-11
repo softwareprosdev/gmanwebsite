@@ -1,20 +1,9 @@
-import type { Metadata } from "next";
+import AdminRootLayout from "./AdminRootLayout";
 
-export const metadata: Metadata = {
-  title: "Admin Dashboard | RGV Handyman",
-  robots: {
-    index: false,
-    follow: false,
-    noarchive: true,
-    nosnippet: true,
-    noimageindex: true,
-  },
-};
-
-export default function AdminRootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <AdminRootLayout>{children}</AdminRootLayout>;
 }

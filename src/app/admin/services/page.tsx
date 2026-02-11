@@ -1,43 +1,89 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaEdit, FaTrash, FaPlus, FaCheck, FaTimes } from "react-icons/fa";
-import { ServiceConfig } from "../lib/services";
-import { readServicesData } from "../lib/data";
+import { FaEdit, FaTrash, FaPlus, FaCheck, FaTimes, FaCheckCircle } from "react-icons/fa";
+import { useServices } from "@/components/ServiceProvider";
 
-interface ServiceItem extends ServiceConfig {}
+interface Service {
+  id: string;
+  serviceCode: string;
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+  defaultPriceMin: number;
+  defaultPriceMax: number;
+  features: string[];
+  category: string;
+  available: boolean;
+  createdAt: string;
+}
 
 export default function ServicesPage() {
-  const [services, setServices] = useState<ServiceItem[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<ServiceItem | null>(null);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
 
-  useState(() => {
-    const data = readServicesData();
-    setServices(data);
-  });
+  const { services, loading, error, refreshServices, createService, updateService, deleteService } = useServices();
 
-  const handleEdit = (service: ServiceItem) => {
+  const handleEdit = (service: Service) => {
     setSelectedService(service);
     setIsEditModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this service?")) {
-      setServices((prev) => prev.filter((s) => s.id !== id));
+      await deleteService(id);
     }
   };
 
-  const handleToggleAvailability = (id: string) => {
-    setServices((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, available: !s.available } : s))
-    );
+  const handleToggleAvailability = async (id: string) => {
+    const service = services.find((s) => s.id === id);
+    if (service) {
+      await updateService(id, { available: !service.available });
+    }
   };
 
+  const handleAddService = async (serviceData: Omit<Service, "id" | "createdAt">) => {
+    await createService(serviceData);
+    setIsAddModalOpen(false);
+  };
+
+  const handleUpdateService = async (serviceData: Omit<Service, "id" | "createdAt">) => {
+    if (selectedService) {
+      await updateService(selectedService.id, serviceData);
+      setIsEditModalOpen(false);
+      setSelectedService(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button
+            onClick={() => refreshServices()}
+            className="px-4 py-2 bg-teal-600 text-white rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-slate-950 space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -121,12 +167,12 @@ export default function ServicesPage() {
                 <div className="text-sm">
                   <p className="text-gray-500">Price Range</p>
                   <p className="text-white font-medium">
-                    ${service.defaultPriceRange.min} - ${service.defaultPriceRange.max}
+                    ${service.defaultPriceMin} - ${service.defaultPriceMax}
                   </p>
                 </div>
                 <div className="text-sm">
                   <p className="text-gray-500">Service ID</p>
-                  <p className="text-gray-400 font-mono">{service.id}</p>
+                  <p className="text-gray-400 font-mono">{service.serviceCode}</p>
                 </div>
               </div>
             </div>
@@ -139,10 +185,7 @@ export default function ServicesPage() {
         <ServiceModal
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
-          onSave={(newService) => {
-            setServices([...services, { ...newService, id: newService.title.toLowerCase().replace(/\s+/g, "_") }]);
-            setIsAddModalOpen(false);
-          }}
+          onSave={handleAddService}
           mode="add"
         />
       )}
@@ -153,10 +196,7 @@ export default function ServicesPage() {
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           service={selectedService}
-          onSave={(updatedService) => {
-            setServices((prev) => prev.map((s) => (s.id === updatedService.id ? updatedService : s)));
-            setIsEditModalOpen(false);
-          }}
+          onSave={handleUpdateService}
           mode="edit"
         />
       )}
@@ -173,18 +213,20 @@ function ServiceModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  service?: ServiceItem;
-  onSave: (service: ServiceItem) => void;
+  service?: Service;
+  onSave: (service: Omit<Service, "id" | "createdAt">) => void;
   mode?: "add" | "edit";
 }) {
-  const [formData, setFormData] = useState<Partial<ServiceItem>>({
+  const [formData, setFormData] = useState<Partial<Service>>({
     title: "",
+    serviceCode: "",
     description: "",
     icon: "🔧",
     color: "teal",
     features: [],
     category: "Repair",
-    defaultPriceRange: { min: 100, max: 500 },
+    defaultPriceMin: 100,
+    defaultPriceMax: 500,
     available: true,
     ...service,
   });
@@ -211,7 +253,7 @@ function ServiceModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData as ServiceItem);
+    onSave(formData as any);
   };
 
   return (
@@ -241,6 +283,18 @@ function ServiceModal({
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="w-full px-4 py-2 bg-slate-950/50 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              />
+            </div>
+
+            <div className="col-span-2">
+              <label className="block text-sm text-gray-400 mb-1">Service Code</label>
+              <input
+                required
+                type="text"
+                value={formData.serviceCode}
+                onChange={(e) => setFormData({ ...formData, serviceCode: e.target.value })}
+                className="w-full px-4 py-2 bg-slate-950/50 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                placeholder="e.g., plumbing, electrical"
               />
             </div>
 
@@ -344,13 +398,10 @@ function ServiceModal({
                   <span className="absolute left-3 top-2 text-gray-500">$</span>
                   <input
                     type="number"
-                    value={formData.defaultPriceRange?.min}
+                    value={formData.defaultPriceMin}
                     onChange={(e) => setFormData({
                       ...formData,
-                      defaultPriceRange: {
-                        min: Number(e.target.value),
-                        max: formData.defaultPriceRange?.max ?? 500,
-                      },
+                      defaultPriceMin: Number(e.target.value),
                     })}
                     className="w-full pl-7 pr-4 py-2 bg-slate-950/50 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                   />
@@ -362,13 +413,10 @@ function ServiceModal({
                   <span className="absolute left-3 top-2 text-gray-500">$</span>
                   <input
                     type="number"
-                    value={formData.defaultPriceRange?.max}
+                    value={formData.defaultPriceMax}
                     onChange={(e) => setFormData({
                       ...formData,
-                      defaultPriceRange: {
-                        min: formData.defaultPriceRange?.min ?? 100,
-                        max: Number(e.target.value),
-                      },
+                      defaultPriceMax: Number(e.target.value),
                     })}
                     className="w-full pl-7 pr-4 py-2 bg-slate-950/50 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                   />

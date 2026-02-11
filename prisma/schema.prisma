@@ -1,0 +1,134 @@
+// Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// ADMIN USER AUTHENTICATION
+// ==========================================
+model AdminUser {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  role          Role      @default(ADMIN)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLogin     DateTime?
+  isLocked      Boolean   @default(false)
+  loginAttempts Int       @default(0)
+}
+
+// ==========================================
+// CLIENTS
+// ==========================================
+model Client {
+  id            String    @id @default(cuid())
+  clientCode    String    @unique @default("CL000")
+  name          String
+  email         String?   @unique
+  phone         String
+  address       String?
+  city          String?
+  zone          String?
+  status        ClientStatus @default(active)
+  totalBookings Int       @default(0)
+  lastBooking   DateTime?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  bookings Booking[]
+}
+
+// ==========================================
+// SERVICES
+// ==========================================
+model Service {
+  id                String       @id @default(cuid())
+  serviceCode       String       @unique
+  title             String
+  description       String
+  icon              String
+  color             String
+  defaultPriceMin   Float
+  defaultPriceMax   Float
+  features          Json
+  category          String
+  available         Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  bookings Booking[]
+}
+
+// ==========================================
+// BOOKINGS
+// ==========================================
+model Booking {
+  id              String       @id @default(cuid())
+  bookingCode     String       @unique @default("BK000")
+  clientId        String
+  client          Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientName      String
+  clientPhone     String
+  serviceId       String
+  service         Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  serviceName     String
+  date            DateTime
+  time            String
+  address         String
+  city            String?
+  status          BookingStatus @default(new)
+  price           Float
+  paymentStatus   PaymentStatus @default(pending)
+  description     String?
+  invoiceId       String?      @unique
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  completedAt     DateTime?
+
+  @@index([clientId])
+  @@index([serviceId])
+  @@index([status])
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+enum Role {
+  ADMIN
+  STAFF
+}
+
+enum ClientStatus {
+  active
+  inactive
+  pending
+  blocked
+}
+
+enum BookingStatus {
+  new
+  contacted
+  scheduled
+  in_progress
+  completed
+  cancelled
+  overdue
+}
+
+enum PaymentStatus {
+  pending
+  deposit
+  paid
+  refunded
+  failed
+}
