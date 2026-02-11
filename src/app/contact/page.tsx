@@ -252,18 +252,97 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Map Placeholder */}
-      <section className="relative h-80 overflow-hidden bg-gray-100 border-t border-gray-200">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#1e3a5f] flex items-center justify-center">
-              <svg className="w-8 h-8 text-[#d4a017]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+      {/* AI & Drone Technology Section */}
+      <section className="bg-gradient-to-br from-[#0a1628] to-[#1e3a5f] py-16 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollReveal direction="up">
+            <div className="text-center mb-12">
+              <span className="inline-block px-4 py-1.5 bg-[#d4a017]/10 text-[#d4a017] text-sm font-semibold rounded-full mb-4 border border-[#d4a017]/20">Proprietary Technology</span>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                AI-Powered Precision Repairs
+              </h2>
+              <p className="text-gray-300 max-w-2xl mx-auto text-base sm:text-lg">
+                We leverage cutting-edge machine learning algorithms and artificial intelligence with our professional drone fleet to deliver unmatched accuracy in every project.
+              </p>
             </div>
-            <p className="text-gray-700 font-semibold">South Texas Service Area</p>
-            <p className="text-gray-500 text-sm mt-2">Hidalgo &bull; Cameron &bull; Starr &bull; Willacy &bull; Kenedy &bull; Brooks &bull; Jim Hogg</p>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <ScrollReveal delay={0.1} direction="up">
+              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-[#d4a017]/30 transition-all duration-300 h-full">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#d4a017] to-amber-600 flex items-center justify-center mb-5">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">3D Drone Mapping</h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Our proprietary 3D drone mapping system captures every detail of your home&apos;s exterior. We use advanced aerial scanning to create precise models for roofing repairs, siding assessments, and structural analysis.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.2} direction="up">
+              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-[#d4a017]/30 transition-all duration-300 h-full">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#1e3a5f] to-blue-600 flex items-center justify-center mb-5">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">Interior Scanning</h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Our interior scanning technology creates detailed floor plans and identifies problem areas invisible to the naked eye. Ultimate precision for plumbing, electrical, and renovation projects.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.3} direction="up">
+              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-[#d4a017]/30 transition-all duration-300 h-full">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-5">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">ML-Powered Analysis</h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Machine learning algorithms analyze scan data to detect damage patterns, predict maintenance needs, and generate optimal repair plans. Maximum results with maximum efficiency.
+                </p>
+              </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Map - Rio Grande Valley */}
+      <section className="relative">
+        <div className="bg-gray-50 border-t border-gray-200 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <div className="text-center">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Our Service Area</h2>
+              <p className="text-gray-500">Serving the entire Rio Grande Valley and surrounding counties</p>
+            </div>
+          </div>
+          <div className="w-full h-[400px] sm:h-[500px]">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d458789.8562820204!2d-98.13!3d26.25!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1707600000000!5m2!1sen!2sus"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="RGV Handyman Service Area - Rio Grande Valley Map"
+              className="w-full h-full"
+            ></iframe>
+          </div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+            <div className="flex flex-wrap justify-center gap-3">
+              {counties.map((county) => (
+                <span key={county} className="px-4 py-2 bg-white rounded-full text-sm text-[#1e3a5f] font-medium border border-gray-200 shadow-sm">
+                  {county} County
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
