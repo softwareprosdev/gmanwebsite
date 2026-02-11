@@ -1,12 +1,102 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/sections/Hero";
 import { ServicesSection } from "@/components/sections/ServicesSection";
 import { PortfolioSection } from "@/components/sections/PortfolioSection";
 import { BookingSection } from "@/components/sections/BookingSection";
 import Link from "next/link";
 
+export const metadata: Metadata = {
+  title: "RGV Handyman Services | #1 Handyman in the Rio Grande Valley",
+  description:
+    "Professional handyman services in McAllen, Brownsville, Harlingen & across South Texas. Same-day service available for plumbing, electrical, painting, HVAC & general repairs. Call 956.200.2815.",
+  alternates: {
+    canonical: "https://rgvhandyman.softwarepros.org",
+  },
+  openGraph: {
+    title: "RGV Handyman Services | #1 Handyman in the Rio Grande Valley",
+    description:
+      "Professional handyman services in McAllen, Brownsville, Harlingen & across South Texas. Same-day service available. Call 956.200.2815.",
+    url: "https://rgvhandyman.softwarepros.org",
+  },
+};
+
 export default function Home() {
   return (
     <div className="animate-fade-in">
+      {/* Homepage FAQ Schema for AEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "What areas does RGV Handyman Services cover?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "RGV Handyman Services covers the entire Rio Grande Valley including Hidalgo County, Cameron County, Starr County, Willacy County, and surrounding areas. We serve cities like McAllen, Edinburg, Mission, Brownsville, Harlingen, Weslaco, Pharr, and San Juan.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Does RGV Handyman offer same-day service?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, RGV Handyman Services offers same-day service for urgent repairs. We provide fast response times across the Rio Grande Valley. Call 956.200.2815 for emergency or same-day service requests.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What services does RGV Handyman provide?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "RGV Handyman provides plumbing repair, electrical services, general home repair, interior and exterior painting, HVAC repair and installation, and smart home setup. We handle residential and commercial projects of all sizes.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How much does a handyman cost in the Rio Grande Valley?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Handyman service costs in the RGV vary by project. General repairs start at $75, plumbing from $100, electrical from $150, and painting from $300. Contact RGV Handyman at 956.200.2815 for a free estimate tailored to your specific needs.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Is RGV Handyman licensed and insured?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, RGV Handyman Services is a fully licensed and insured handyman service operating in South Texas. All our technicians are trained professionals committed to quality workmanship and customer safety.",
+                },
+              },
+            ],
+          }),
+        }}
+      />
+      {/* WebSite Schema for Sitelinks Search */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "RGV Handyman Services",
+            url: "https://rgvhandyman.softwarepros.org",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate:
+                  "https://rgvhandyman.softwarepros.org/services?q={search_term_string}",
+              },
+              "query-input": "required name=search_term_string",
+            },
+          }),
+        }}
+      />
+
       <Hero />
       <ServicesSection />
       <PortfolioSection />
