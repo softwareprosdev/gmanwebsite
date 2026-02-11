@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -143,11 +141,7 @@ export default function RootLayout({
         <meta name="ICBM" content="26.2191,-98.2505" />
       </head>
       <body className={`${inter.variable} font-sans`}>
-        <div className="min-h-screen bg-white text-gray-900 selection:bg-amber-500/30 selection:text-amber-900">
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </div>
+        {children}
       </body>
     </html>
   );
