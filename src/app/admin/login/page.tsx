@@ -74,8 +74,8 @@ function LoginForm() {
               <span className="text-3xl sm:text-4xl">🔨</span>
             </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#1e3a5f] mb-2">RGV Handyman</h1>
-          <p className="text-gray-500 text-sm sm:text-base">Admin Management System</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#1e3a5f] mb-2">Handyman Numix Pro</h1>
+          <p className="text-gray-500 text-sm sm:text-base">Business Management System</p>
         </div>
 
         {/* Login Card */}

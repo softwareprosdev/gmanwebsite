@@ -45,7 +45,9 @@ model Client {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  bookings Booking[]
+  bookings  Booking[]
+  estimates Estimate[]
+  invoices  Invoice[]
 }
 
 // ==========================================
@@ -66,7 +68,8 @@ model Service {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 
-  bookings Booking[]
+  bookings  Booking[]
+  estimates Estimate[]
 }
 
 // ==========================================
@@ -95,9 +98,99 @@ model Booking {
   updatedAt       DateTime     @updatedAt
   completedAt     DateTime?
 
+  invoices  Invoice[]
+  estimates Estimate[]
+
   @@index([clientId])
   @@index([serviceId])
   @@index([status])
+}
+
+// ==========================================
+// ESTIMATES
+// ==========================================
+model Estimate {
+  id            String         @id @default(cuid())
+  estimateCode  String         @unique @default("EST000")
+  clientId      String
+  client        Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientName    String
+  clientEmail   String?
+  clientPhone   String
+  serviceId     String?
+  service       Service?       @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceName   String?
+  bookingId     String?
+  booking       Booking?       @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  items         Json           @default("[]")
+  subtotal      Float          @default(0)
+  tax           Float          @default(0)
+  total         Float          @default(0)
+  status        EstimateStatus @default(draft)
+  validUntil    DateTime?
+  notes         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([clientId])
+  @@index([status])
+}
+
+// ==========================================
+// INVOICES
+// ==========================================
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceCode   String        @unique @default("INV000")
+  bookingId     String?
+  booking       Booking?      @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  clientId      String
+  client        Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientName    String
+  clientEmail   String?
+  clientPhone   String
+  clientAddress String?
+  items         Json          @default("[]")
+  subtotal      Float         @default(0)
+  tax           Float         @default(0)
+  total         Float         @default(0)
+  status        InvoiceStatus @default(draft)
+  dueDate       DateTime?
+  paidAt        DateTime?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([clientId])
+  @@index([status])
+}
+
+// ==========================================
+// ACTIVITY LOG
+// ==========================================
+model ActivityLog {
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String
+  entityName String?
+  details    Json?
+  userId     String?
+  userName   String?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType])
+  @@index([createdAt])
+}
+
+// ==========================================
+// SETTINGS (key-value store)
+// ==========================================
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
 }
 
 // ==========================================
@@ -131,4 +224,20 @@ enum PaymentStatus {
   paid
   refunded
   failed
+}
+
+enum EstimateStatus {
+  draft
+  sent
+  accepted
+  rejected
+  expired
+}
+
+enum InvoiceStatus {
+  draft
+  sent
+  paid
+  overdue
+  cancelled
 }

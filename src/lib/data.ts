@@ -242,6 +242,154 @@ export async function updateBookingStatus(bookingId: string, newStatus: string) 
 }
 
 // ==========================================
+// ESTIMATES
+// ==========================================
+
+export async function readEstimateData() {
+  const response = await fetch(`${API_BASE_URL}/estimates`);
+  if (!response.ok) throw new Error('Failed to fetch estimates');
+  return await response.json();
+}
+
+export async function getEstimateById(id: string) {
+  const response = await fetch(`${API_BASE_URL}/estimates/${id}`);
+  if (!response.ok) throw new Error('Failed to fetch estimate');
+  return await response.json();
+}
+
+export async function searchEstimates(query: string) {
+  const response = await fetch(`${API_BASE_URL}/estimates?search=${encodeURIComponent(query)}`);
+  if (!response.ok) throw new Error('Failed to search estimates');
+  return await response.json();
+}
+
+export async function getEstimatesByStatus(status: string) {
+  const response = await fetch(`${API_BASE_URL}/estimates?status=${encodeURIComponent(status)}`);
+  if (!response.ok) throw new Error('Failed to fetch estimates');
+  return await response.json();
+}
+
+export async function createEstimate(data: any) {
+  const response = await fetch(`${API_BASE_URL}/estimates`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to create estimate');
+  return await response.json();
+}
+
+export async function updateEstimate(id: string, data: any) {
+  const response = await fetch(`${API_BASE_URL}/estimates/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to update estimate');
+  return await response.json();
+}
+
+export async function deleteEstimate(id: string) {
+  const response = await fetch(`${API_BASE_URL}/estimates/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error('Failed to delete estimate');
+  return await response.json();
+}
+
+// ==========================================
+// INVOICES
+// ==========================================
+
+export async function readInvoiceData() {
+  const response = await fetch(`${API_BASE_URL}/invoices`);
+  if (!response.ok) throw new Error('Failed to fetch invoices');
+  return await response.json();
+}
+
+export async function getInvoiceById(id: string) {
+  const response = await fetch(`${API_BASE_URL}/invoices/${id}`);
+  if (!response.ok) throw new Error('Failed to fetch invoice');
+  return await response.json();
+}
+
+export async function searchInvoices(query: string) {
+  const response = await fetch(`${API_BASE_URL}/invoices?search=${encodeURIComponent(query)}`);
+  if (!response.ok) throw new Error('Failed to search invoices');
+  return await response.json();
+}
+
+export async function getInvoicesByStatus(status: string) {
+  const response = await fetch(`${API_BASE_URL}/invoices?status=${encodeURIComponent(status)}`);
+  if (!response.ok) throw new Error('Failed to fetch invoices');
+  return await response.json();
+}
+
+export async function createInvoice(data: any) {
+  const response = await fetch(`${API_BASE_URL}/invoices`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to create invoice');
+  return await response.json();
+}
+
+export async function updateInvoice(id: string, data: any) {
+  const response = await fetch(`${API_BASE_URL}/invoices/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to update invoice');
+  return await response.json();
+}
+
+export async function deleteInvoice(id: string) {
+  const response = await fetch(`${API_BASE_URL}/invoices/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) throw new Error('Failed to delete invoice');
+  return await response.json();
+}
+
+// ==========================================
+// ACTIVITY LOG
+// ==========================================
+
+export async function readActivityLog(limit = 50) {
+  const response = await fetch(`${API_BASE_URL}/activity?limit=${limit}`);
+  if (!response.ok) throw new Error('Failed to fetch activity log');
+  return await response.json();
+}
+
+export async function getActivityByEntity(entityType: string, entityId: string) {
+  const response = await fetch(`${API_BASE_URL}/activity?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`);
+  if (!response.ok) throw new Error('Failed to fetch activity');
+  return await response.json();
+}
+
+// ==========================================
+// SETTINGS (DB-backed)
+// ==========================================
+
+export async function readSettings() {
+  const response = await fetch(`${API_BASE_URL}/settings`);
+  if (!response.ok) throw new Error('Failed to fetch settings');
+  return await response.json();
+}
+
+export async function saveSettings(data: Record<string, any>) {
+  const response = await fetch(`${API_BASE_URL}/settings`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to save settings');
+  return await response.json();
+}
+
+// ==========================================
 // STATISTICS
 // ==========================================
 

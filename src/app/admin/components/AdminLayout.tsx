@@ -13,31 +13,34 @@ import {
   FaSignOutAlt,
   FaBars,
   FaTimes,
-  FaHome,
+  FaCalendarAlt,
+  FaFileInvoiceDollar,
+  FaCalculator,
+  FaChartBar,
+  FaHistory,
 } from "react-icons/fa";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-const navItems = [
+const mainNavItems = [
   { name: "Dashboard", href: "/admin", icon: <FaTachometerAlt size={20} /> },
+  { name: "Calendar", href: "/admin/calendar", icon: <FaCalendarAlt size={20} /> },
   { name: "Clients", href: "/admin/clients", icon: <FaUsers size={20} /> },
-  {
-    name: "Bookings",
-    href: "/admin/bookings",
-    icon: <FaClipboardList size={20} />,
-  },
-  {
-    name: "Services",
-    href: "/admin/services",
-    icon: <FaToolbox size={20} />,
-  },
-  {
-    name: "Settings",
-    href: "/admin/settings",
-    icon: <FaCog size={20} />,
-  },
+  { name: "Bookings", href: "/admin/bookings", icon: <FaClipboardList size={20} /> },
+  { name: "Services", href: "/admin/services", icon: <FaToolbox size={20} /> },
+];
+
+const financeNavItems = [
+  { name: "Estimates", href: "/admin/estimates", icon: <FaCalculator size={20} /> },
+  { name: "Invoices", href: "/admin/invoices", icon: <FaFileInvoiceDollar size={20} /> },
+];
+
+const systemNavItems = [
+  { name: "Reports", href: "/admin/reports", icon: <FaChartBar size={20} /> },
+  { name: "Activity", href: "/admin/activity", icon: <FaHistory size={20} /> },
+  { name: "Settings", href: "/admin/settings", icon: <FaCog size={20} /> },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
@@ -72,11 +75,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
           <Link href="/admin" className="flex items-center space-x-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-teal-600 to-gold-500">
-              <span className="text-lg font-bold text-white">RGV</span>
+              <span className="text-lg font-bold text-white">NX</span>
             </div>
-            <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-gold-400">
-              Admin Panel
-            </span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-gold-400">
+                Numix Pro
+              </span>
+              <span className="text-[10px] text-gray-500">Handyman CRM</span>
+            </div>
           </Link>
           <button
             onClick={() => setIsSidebarOpen(false)}
@@ -87,18 +93,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="mt-6 px-4 space-y-1">
-          <p className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            Main Menu
+        <nav className="mt-4 px-4 space-y-1 overflow-y-auto max-h-[calc(100vh-180px)] scrollbar-thin">
+          <p className="px-4 pb-1 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+            Main
           </p>
-          {navItems.map((item, index) => {
+          {mainNavItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.name}
                 href={item.href}
                 onClick={() => setIsSidebarOpen(false)}
-                className={`relative flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                className={`relative flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
                   isActive
                     ? "bg-teal-500/10 text-teal-400"
                     : "text-gray-400 hover:bg-white/5 hover:text-teal-400"
@@ -111,22 +117,78 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   />
                 )}
                 {item.icon}
-                <span className="font-medium">{item.name}</span>
+                <span className="font-medium text-sm">{item.name}</span>
+              </Link>
+            );
+          })}
+
+          <p className="px-4 pt-4 pb-1 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+            Finance
+          </p>
+          {financeNavItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsSidebarOpen(false)}
+                className={`relative flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
+                  isActive
+                    ? "bg-teal-500/10 text-teal-400"
+                    : "text-gray-400 hover:bg-white/5 hover:text-teal-400"
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="active-nav"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-teal-500 rounded-r-full"
+                  />
+                )}
+                {item.icon}
+                <span className="font-medium text-sm">{item.name}</span>
+              </Link>
+            );
+          })}
+
+          <p className="px-4 pt-4 pb-1 text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+            System
+          </p>
+          {systemNavItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsSidebarOpen(false)}
+                className={`relative flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
+                  isActive
+                    ? "bg-teal-500/10 text-teal-400"
+                    : "text-gray-400 hover:bg-white/5 hover:text-teal-400"
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="active-nav"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-teal-500 rounded-r-full"
+                  />
+                )}
+                {item.icon}
+                <span className="font-medium text-sm">{item.name}</span>
               </Link>
             );
           })}
 
           {/* Logout Button */}
-          <div className="mt-8 px-4">
+          <div className="pt-4">
             <button
               onClick={() => {
                 localStorage.removeItem("adminAuth");
                 window.location.href = "/admin/login";
               }}
-              className="flex w-full items-center space-x-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
+              className="flex w-full items-center space-x-3 px-4 py-2.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
             >
               <FaSignOutAlt size={20} />
-              <span className="font-medium">Logout</span>
+              <span className="font-medium text-sm">Logout</span>
             </button>
           </div>
         </nav>
@@ -135,8 +197,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-gray-500">RGV Handyman Admin</p>
-              <p className="text-[10px] text-gray-600">v1.0.0</p>
+              <p className="text-xs text-gray-500">Handyman Numix Pro</p>
+              <p className="text-[10px] text-gray-600">v2.0.0</p>
             </div>
             <div className="flex space-x-2">
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -157,7 +219,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <FaBars size={24} />
           </button>
           <Link href="/admin" className="font-bold text-teal-500">
-            RGV Admin
+            Numix Pro
           </Link>
           <div className="w-6"></div>
         </header>

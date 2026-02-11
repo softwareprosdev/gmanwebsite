@@ -1,127 +1,136 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaSave, FaTimes, FaUpload, FaCheck } from "react-icons/fa";
+import { FaSave, FaTimes, FaCheck, FaSpinner } from "react-icons/fa";
+import { readSettings, saveSettings } from "@/lib/data";
 
-interface CompanySettings {
+interface Settings {
   companyName: string;
-  tagline: string;
-  description: string;
-  phone: string;
-  email: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
+  companyTagline: string;
+  companyDescription: string;
+  companyPhone: string;
+  companyEmail: string;
+  companyAddress: string;
+  companyCity: string;
+  companyState: string;
+  companyZip: string;
   serviceAreas: string[];
-  businessHours: {
-   monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  };
-  socialMedia: {
-    facebook: string;
-    instagram: string;
-    twitter: string;
-    linkedin: string;
-  };
+  businessHours: Record<string, { open: string; close: string }>;
   paymentMethods: string[];
+  taxRate: number;
+  notificationEmail: string;
   notes: string;
 }
 
-export default function SettingsPage() {
-  const [settings, setSettings] = useState<CompanySettings>({
-    companyName: "RGV Handyman",
-    tagline: "Your Trusted Home Repair Partner in South Texas",
-    description: "Professional handyman services across the Rio Grande Valley. We provide quality home repair, maintenance, and renovation services for residential and commercial properties.",
-    phone: "956.200.2815",
-    email: "info@rgvhandyman.com",
-    address: "123 Service Center Dr",
-    city: "McAllen",
-    state: "TX",
-    zipCode: "78501",
-    serviceAreas: ["McAllen", "Edinburg", "Mission", "Brownsville", "Harlingen", "Pharr", "Weslaco", "San Juan"],
-    businessHours: {
-      monday: "8:00 AM - 6:00 PM",
-      tuesday: "8:00 AM - 6:00 PM",
-      wednesday: "8:00 AM - 6:00 PM",
-      thursday: "8:00 AM - 6:00 PM",
-      friday: "8:00 AM - 6:00 PM",
-      saturday: "9:00 AM - 4:00 PM",
-      sunday: "Closed",
-    },
-    socialMedia: {
-      facebook: "https://facebook.com/rgvhandyman",
-      instagram: "https://instagram.com/rgvhandyman",
-      twitter: "",
-      linkedin: "",
-    },
-    paymentMethods: ["Cash", "Credit Card", "Venmo", "Zelle", "Check"],
-    notes: "Last updated: January 2026",
-  });
+const ALL_AREAS = ["McAllen", "Edinburg", "Mission", "Brownsville", "Harlingen", "Pharr", "Weslaco", "San Juan", "Raymondville", "Rio Grande City"];
+const ALL_PAYMENT_METHODS = ["Cash", "Credit Card", "Debit Card", "Venmo", "Zelle", "PayPal", "Check"];
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
+export default function SettingsPage() {
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [originalSettings, setOriginalSettings] = useState<Settings | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showSaveToast, setShowSaveToast] = useState(false);
 
-  const toggleServiceArea = (area: string) => {
-    setSettings((prev) => ({
-      ...prev,
-      serviceAreas: prev.serviceAreas.includes(area)
-        ? prev.serviceAreas.filter((a) => a !== area)
-        : [...prev.serviceAreas, area],
-    }));
-  };
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await readSettings();
+        const s = data.settings;
+        setSettings(s);
+        setOriginalSettings(s);
+      } catch (err) {
+        console.error("Failed to load settings:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
-  const handleSave = () => {
-    // In production, this would save to a backend
-    console.log("Saving settings:", settings);
-    setIsEditing(false);
-    setShowSaveToast(true);
-    setTimeout(() => setShowSaveToast(false), 3000);
+  const handleSave = async () => {
+    if (!settings) return;
+    setSaving(true);
+    try {
+      // Send each field as a separate key-value pair
+      await saveSettings({
+        companyName: settings.companyName,
+        companyTagline: settings.companyTagline,
+        companyDescription: settings.companyDescription,
+        companyPhone: settings.companyPhone,
+        companyEmail: settings.companyEmail,
+        companyAddress: settings.companyAddress,
+        companyCity: settings.companyCity,
+        companyState: settings.companyState,
+        companyZip: settings.companyZip,
+        serviceAreas: settings.serviceAreas,
+        businessHours: settings.businessHours,
+        paymentMethods: settings.paymentMethods,
+        taxRate: settings.taxRate,
+        notificationEmail: settings.notificationEmail,
+        notes: settings.notes,
+      });
+      setOriginalSettings(settings);
+      setIsEditing(false);
+      setShowSaveToast(true);
+      setTimeout(() => setShowSaveToast(false), 3000);
+    } catch (err) {
+      console.error("Failed to save settings:", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
+    setSettings(originalSettings);
     setIsEditing(false);
-    // Reset to original values
+  };
+
+  const toggleServiceArea = (area: string) => {
+    if (!settings) return;
     setSettings({
-      companyName: "RGV Handyman",
-      tagline: "Your Trusted Home Repair Partner in South Texas",
-      description: "Professional handyman services across the Rio Grande Valley. We provide quality home repair, maintenance, and renovation services for residential and commercial properties.",
-      phone: "956.200.2815",
-      email: "info@rgvhandyman.com",
-      address: "123 Service Center Dr",
-      city: "McAllen",
-      state: "TX",
-      zipCode: "78501",
-      serviceAreas: ["McAllen", "Edinburg", "Mission", "Brownsville", "Harlingen", "Pharr", "Weslaco", "San Juan"],
-      businessHours: {
-        monday: "8:00 AM - 6:00 PM",
-        tuesday: "8:00 AM - 6:00 PM",
-        wednesday: "8:00 AM - 6:00 PM",
-        thursday: "8:00 AM - 6:00 PM",
-        friday: "8:00 AM - 6:00 PM",
-        saturday: "9:00 AM - 4:00 PM",
-        sunday: "Closed",
-      },
-      socialMedia: {
-        facebook: "https://facebook.com/rgvhandyman",
-        instagram: "https://instagram.com/rgvhandyman",
-        twitter: "",
-        linkedin: "",
-      },
-      paymentMethods: ["Cash", "Credit Card", "Venmo", "Zelle", "Check"],
-      notes: "Last updated: January 2026",
+      ...settings,
+      serviceAreas: settings.serviceAreas.includes(area)
+        ? settings.serviceAreas.filter((a) => a !== area)
+        : [...settings.serviceAreas, area],
     });
   };
 
+  const togglePaymentMethod = (method: string) => {
+    if (!settings) return;
+    setSettings({
+      ...settings,
+      paymentMethods: settings.paymentMethods.includes(method)
+        ? settings.paymentMethods.filter((m) => m !== method)
+        : [...settings.paymentMethods, method],
+    });
+  };
+
+  const updateHours = (day: string, field: "open" | "close", value: string) => {
+    if (!settings) return;
+    setSettings({
+      ...settings,
+      businessHours: {
+        ...settings.businessHours,
+        [day]: { ...settings.businessHours[day], [field]: value },
+      },
+    });
+  };
+
+  if (loading || !settings) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 space-y-8">
-      {/* Page Header */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white">Settings</h1>
@@ -132,25 +141,26 @@ export default function SettingsPage() {
             <>
               <button
                 onClick={handleCancel}
-                className="px-4 py-2 rounded-lg bg-slate-800 text-gray-300 hover:bg-slate-700 transition-colors flex items-center space-x-2"
+                className="px-4 py-2 rounded-lg bg-slate-800 text-gray-300 hover:bg-slate-700 transition-colors flex items-center space-x-2 text-sm"
               >
-                <FaTimes size={18} />
+                <FaTimes size={14} />
                 <span>Cancel</span>
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-teal-600 to-gold-600 text-white font-medium hover:shadow-[0_0_15px_rgba(0,128,128,0.3)] transition-all flex items-center space-x-2"
+                disabled={saving}
+                className="px-4 py-2 rounded-lg bg-teal-500 text-white font-medium hover:bg-teal-600 transition-all flex items-center space-x-2 text-sm disabled:opacity-50"
               >
-                <FaSave size={18} />
-                <span>Save Changes</span>
+                {saving ? <FaSpinner size={14} className="animate-spin" /> : <FaSave size={14} />}
+                <span>{saving ? "Saving..." : "Save Changes"}</span>
               </button>
             </>
           ) : (
             <button
               onClick={() => setIsEditing(true)}
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-teal-600 to-gold-600 text-white font-medium hover:shadow-[0_0_15px_rgba(0,128,128,0.3)] transition-all flex items-center space-x-2"
+              className="px-4 py-2 rounded-lg bg-teal-500 text-white font-medium hover:bg-teal-600 transition-all flex items-center space-x-2 text-sm"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
               <span>Edit Settings</span>
@@ -159,7 +169,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Save Toast */}
+      {/* Toast */}
       {showSaveToast && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -167,10 +177,10 @@ export default function SettingsPage() {
           exit={{ opacity: 0, y: -20 }}
           className="fixed top-6 right-6 z-50 bg-green-600 text-white px-6 py-4 rounded-lg shadow-xl flex items-center space-x-3"
         >
-          <FaCheck size={24} />
+          <FaCheck size={18} />
           <div>
-            <h4 className="font-bold">Settings Saved</h4>
-            <p className="text-sm text-green-100">Your company settings have been updated</p>
+            <h4 className="font-bold text-sm">Settings Saved</h4>
+            <p className="text-xs text-green-100">Your settings have been saved to the database</p>
           </div>
         </motion.div>
       )}
@@ -178,138 +188,95 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Company Information */}
         <div className="bg-slate-900/50 backdrop-blur-lg border border-white/10 rounded-xl p-6">
-          <div className="flex items-center mb-6">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <svg className="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-              Company Info
-            </h2>
-          </div>
-
+          <h2 className="text-lg font-bold text-white mb-4">Company Information</h2>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-400 mb-1">Company Name</label>
-              <input
-                type="text"
-                value={settings.companyName}
-                onChange={(e) => setSettings({ ...settings, companyName: e.target.value })}
-                disabled={!isEditing}
-                className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white ${isEditing ? "" : "opacity-75"}`}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-400 mb-1">Tagline</label>
-              <input
-                type="text"
-                value={settings.tagline}
-                onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
-                disabled={!isEditing}
-                className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white ${isEditing ? "" : "opacity-75"}`}
-              />
-            </div>
+            {[
+              { label: "Company Name", key: "companyName" },
+              { label: "Tagline", key: "companyTagline" },
+            ].map(({ label, key }) => (
+              <div key={key}>
+                <label className="block text-sm text-gray-400 mb-1">{label}</label>
+                <input
+                  type="text"
+                  value={(settings as any)[key]}
+                  onChange={(e) => setSettings({ ...settings, [key]: e.target.value })}
+                  disabled={!isEditing}
+                  className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`}
+                />
+              </div>
+            ))}
 
             <div>
               <label className="block text-sm text-gray-400 mb-1">Description</label>
               <textarea
-                value={settings.description}
-                onChange={(e) => setSettings({ ...settings, description: e.target.value })}
+                value={settings.companyDescription}
+                onChange={(e) => setSettings({ ...settings, companyDescription: e.target.value })}
                 disabled={!isEditing}
                 rows={3}
-                className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white ${isEditing ? "" : "opacity-75"}`}
-              ></textarea>
+                className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Phone</label>
-                <input
-                  type="tel"
-                  value={settings.phone}
-                  onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
-                  disabled={!isEditing}
-                  className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white ${isEditing ? "" : "opacity-75"}`}
-                />
+                <input type="tel" value={settings.companyPhone} onChange={(e) => setSettings({ ...settings, companyPhone: e.target.value })} disabled={!isEditing} className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`} />
               </div>
               <div>
                 <label className="block text-sm text-gray-400 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={settings.email}
-                  onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-                  disabled={!isEditing}
-                  className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white ${isEditing ? "" : "opacity-75"}`}
-                />
+                <input type="email" value={settings.companyEmail} onChange={(e) => setSettings({ ...settings, companyEmail: e.target.value })} disabled={!isEditing} className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`} />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <label className="block text-sm text-gray-400 mb-1">Address</label>
-                <input
-                  type="text"
-                  value={settings.address}
-                  onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-                  disabled={!isEditing}
-                  className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white ${isEditing ? "" : "opacity-75"}`}
-                />
-              </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Address</label>
+              <input type="text" value={settings.companyAddress} onChange={(e) => setSettings({ ...settings, companyAddress: e.target.value })} disabled={!isEditing} className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`} />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm text-gray-400 mb-1">City</label>
-                <input
-                  type="text"
-                  value={settings.city}
-                  onChange={(e) => setSettings({ ...settings, city: e.target.value })}
-                  disabled={!isEditing}
-                  className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white ${isEditing ? "" : "opacity-75"}`}
-                />
+                <input type="text" value={settings.companyCity} onChange={(e) => setSettings({ ...settings, companyCity: e.target.value })} disabled={!isEditing} className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`} />
               </div>
               <div>
                 <label className="block text-sm text-gray-400 mb-1">State</label>
-                <input
-                  type="text"
-                  value={settings.state}
-                  onChange={(e) => setSettings({ ...settings, state: e.target.value })}
-                  disabled={!isEditing}
-                  className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white ${isEditing ? "" : "opacity-75"}`}
-                />
+                <input type="text" value={settings.companyState} onChange={(e) => setSettings({ ...settings, companyState: e.target.value })} disabled={!isEditing} className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`} />
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-1">ZIP Code</label>
-                <input
-                  type="text"
-                  value={settings.zipCode}
-                  onChange={(e) => setSettings({ ...settings, zipCode: e.target.value })}
-                  disabled={!isEditing}
-                  className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white ${isEditing ? "" : "opacity-75"}`}
-                />
+                <label className="block text-sm text-gray-400 mb-1">ZIP</label>
+                <input type="text" value={settings.companyZip} onChange={(e) => setSettings({ ...settings, companyZip: e.target.value })} disabled={!isEditing} className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Tax Rate (%)</label>
+                <input type="number" step="0.01" value={settings.taxRate} onChange={(e) => setSettings({ ...settings, taxRate: parseFloat(e.target.value) || 0 })} disabled={!isEditing} className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`} />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Notification Email</label>
+                <input type="email" value={settings.notificationEmail} onChange={(e) => setSettings({ ...settings, notificationEmail: e.target.value })} disabled={!isEditing} className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`} />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Service Areas & Hours */}
+        {/* Right Column */}
         <div className="space-y-6">
           {/* Service Areas */}
           <div className="bg-slate-900/50 backdrop-blur-lg border border-white/10 rounded-xl p-6">
-            <div className="flex items-center mb-4">
-              <h3 className="text-lg font-bold text-white">Service Areas</h3>
-            </div>
+            <h3 className="text-lg font-bold text-white mb-4">Service Areas</h3>
             <div className="flex flex-wrap gap-2">
-              {["McAllen", "Edinburg", "Mission", "Brownsville", "Harlingen", "Pharr", "Weslaco", "San Juan", "Raymondville", "Rio Grande City"].map((area) => (
+              {ALL_AREAS.map((area) => (
                 <button
                   key={area}
                   onClick={() => toggleServiceArea(area)}
+                  disabled={!isEditing}
                   className={`px-4 py-2 rounded-lg text-sm transition-colors ${
                     settings.serviceAreas.includes(area)
                       ? "bg-teal-600 text-white"
                       : "bg-slate-800 text-gray-400 hover:bg-slate-700"
                   } ${!isEditing ? "opacity-50 cursor-not-allowed" : ""}`}
-                  disabled={!isEditing}
                 >
                   {area}
                 </button>
@@ -319,58 +286,44 @@ export default function SettingsPage() {
 
           {/* Business Hours */}
           <div className="bg-slate-900/50 backdrop-blur-lg border border-white/10 rounded-xl p-6">
-            <div className="flex items-center mb-4">
-              <h3 className="text-lg font-bold text-white">Business Hours</h3>
-            </div>
+            <h3 className="text-lg font-bold text-white mb-4">Business Hours</h3>
             <div className="space-y-3">
-              {[
-                { day: "Monday", key: "monday" },
-                { day: "Tuesday", key: "tuesday" },
-                { day: "Wednesday", key: "wednesday" },
-                { day: "Thursday", key: "thursday" },
-                { day: "Friday", key: "friday" },
-                { day: "Saturday", key: "saturday" },
-                { day: "Sunday", key: "sunday" },
-              ].map((day) => (
-                <div key={day.key} className="flex items-center justify-between">
-                  <span className="text-gray-300">{day.day}</span>
-                  <input
-                    type="text"
-                    value={settings.businessHours[day.key as keyof typeof settings.businessHours]}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        businessHours: {
-                          ...settings.businessHours,
-                          [day.key]: e.target.value,
-                        },
-                      })
-                    }
-                    disabled={!isEditing}
-                    className={`w-48 px-3 py-1.5 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`}
-                  />
-                </div>
-              ))}
+              {DAYS.map((day) => {
+                const hours = settings.businessHours[day] || { open: "", close: "" };
+                return (
+                  <div key={day} className="flex items-center justify-between">
+                    <span className="text-gray-300 text-sm w-24">{day}</span>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="time"
+                        value={hours.open}
+                        onChange={(e) => updateHours(day, "open", e.target.value)}
+                        disabled={!isEditing}
+                        className={`px-2 py-1 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded text-white text-sm ${isEditing ? "" : "opacity-75"}`}
+                      />
+                      <span className="text-gray-500 text-xs">to</span>
+                      <input
+                        type="time"
+                        value={hours.close}
+                        onChange={(e) => updateHours(day, "close", e.target.value)}
+                        disabled={!isEditing}
+                        className={`px-2 py-1 bg-slate-950/50 border ${isEditing ? "border-white/10" : "border-transparent"} rounded text-white text-sm ${isEditing ? "" : "opacity-75"}`}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           {/* Payment Methods */}
           <div className="bg-slate-900/50 backdrop-blur-lg border border-white/10 rounded-xl p-6">
-            <div className="flex items-center mb-4">
-              <h3 className="text-lg font-bold text-white">Payment Methods</h3>
-            </div>
+            <h3 className="text-lg font-bold text-white mb-4">Payment Methods</h3>
             <div className="flex flex-wrap gap-2">
-              {["Cash", "Credit Card", "Debit Card", "Venmo", "Zelle", "PayPal", "Check"].map((method) => (
+              {ALL_PAYMENT_METHODS.map((method) => (
                 <button
                   key={method}
-                  onClick={() =>
-                    setSettings((prev) => ({
-                      ...prev,
-                      paymentMethods: prev.paymentMethods.includes(method)
-                        ? prev.paymentMethods.filter((m) => m !== method)
-                        : [...prev.paymentMethods, method],
-                    }))
-                  }
+                  onClick={() => togglePaymentMethod(method)}
                   disabled={!isEditing}
                   className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
                     settings.paymentMethods.includes(method)
@@ -389,9 +342,14 @@ export default function SettingsPage() {
       {/* Notes */}
       <div className="bg-slate-900/50 backdrop-blur-lg border border-white/10 rounded-xl p-6">
         <h3 className="text-lg font-bold text-white mb-4">Notes</h3>
-        <div className="p-4 bg-slate-950/50 rounded-lg border border-white/5">
-          <p className="text-gray-400 text-sm">{settings.notes}</p>
-        </div>
+        <textarea
+          value={settings.notes}
+          onChange={(e) => setSettings({ ...settings, notes: e.target.value })}
+          disabled={!isEditing}
+          rows={3}
+          className={`w-full px-4 py-2 bg-slate-950/50 border ${isEditing ? "border-white/10 focus:ring-2 focus:ring-teal-500" : "border-transparent"} rounded-lg text-white text-sm ${isEditing ? "" : "opacity-75"}`}
+          placeholder="Internal notes..."
+        />
       </div>
     </div>
   );
