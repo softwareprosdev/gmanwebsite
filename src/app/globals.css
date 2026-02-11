@@ -46,6 +46,66 @@ body {
   animation: gradient 10s ease infinite;
 }
 
+/* LED orbit border effect */
+.led-border {
+  position: relative;
+  border-radius: 12px;
+  padding: 2px;
+  overflow: hidden;
+}
+
+.led-border::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 270deg,
+    var(--gold-accent) 300deg,
+    var(--gold-light) 330deg,
+    var(--gold-accent) 360deg
+  );
+  transform-origin: center;
+  animation: led-spin 2.5s linear infinite;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.led-border::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 180deg,
+    transparent 0deg,
+    transparent 270deg,
+    var(--navy-primary) 300deg,
+    var(--navy-light) 330deg,
+    var(--navy-primary) 360deg
+  );
+  transform-origin: center;
+  animation: led-spin 2.5s linear infinite;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+@keyframes led-spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.led-border-inner {
+  position: relative;
+  z-index: 1;
+  border-radius: 10px;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
