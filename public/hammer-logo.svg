@@ -1,0 +1,9 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hammer Head -->
+  <rect x="40" y="80" width="140" height="60" rx="8" fill="#d4a017"/>
+  <!-- Handle -->
+  <rect x="160" y="120" width="40" height="100" rx="4" fill="#1e3a5f" transform="rotate(-30 180 170)"/>
+  <!-- Hammer claw/ claw detail -->
+  <path d="M40 80 L20 60 L40 70 Z" fill="#b08d14"/>
+  <path d="M180 80 L200 60 L180 70 Z" fill="#b08d14"/>
+</svg>
