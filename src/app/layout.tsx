@@ -144,7 +144,7 @@ export default function RootLayout({
         <meta name="ICBM" content="26.2191,-98.2505" />
       </head>
       <body className={`${inter.variable} font-sans`}>
-        <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30 selection:text-cyan-200">
+        <div className="min-h-screen bg-black text-white selection:bg-teal-600/30 selection:text-teal-200">
           <Navbar />
           <main>{children}</main>
           <Footer />

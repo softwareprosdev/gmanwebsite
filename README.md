@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://rgvhandyman.softwarepros.org/logo.png" alt="RGV Handyman" width="120" height="120" />
+  <img src="https://raw.githubusercontent.com/softwareprosdev/gmanwebsite/main/public/logo.png" alt="RGV Handyman Logo" width="150" height="150" />
 </p>
 
 <h1 align="center">RGV Handyman</h1>
