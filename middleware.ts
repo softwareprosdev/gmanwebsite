@@ -13,14 +13,15 @@ export default withAuth({
   },
   callbacks: {
     authorized({ req, token }) {
-      // Get the path from the request
       const path = req.nextUrl.pathname;
 
-      // Check if it's an admin route
-      const isAdminRoute = path.startsWith('/admin');
+      // Always allow login page
+      if (path === '/admin/login') {
+        return true;
+      }
 
-      if (isAdminRoute) {
-        // Allow access if user is authenticated
+      // Protect all other admin routes
+      if (path.startsWith('/admin')) {
         return token != null;
       }
 

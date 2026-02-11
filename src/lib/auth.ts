@@ -95,17 +95,6 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 60, // 30 minutes
     updateAge: 60, // Refresh if older than 1 minute
   },
-  cookies: {
-    sessionToken: {
-      name: 'next-auth.session-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-      },
-    },
-  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
